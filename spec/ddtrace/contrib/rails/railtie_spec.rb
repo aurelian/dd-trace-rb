@@ -9,17 +9,6 @@ RSpec.describe 'Rails application' do
 
   let(:tracer) { ::Datadog::Tracer.new(writer: FauxWriter.new) }
 
-  let(:routes) { { '/' => 'test#index' } }
-  let(:controllers) { [controller] }
-
-  let(:controller) do
-    stub_const('TestController', Class.new(ActionController::Base) do
-      def index
-        head :ok
-      end
-    end)
-  end
-
   RSpec::Matchers.define :have_kind_of_middleware do |expected|
     match do |actual|
       found = 0

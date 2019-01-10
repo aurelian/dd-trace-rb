@@ -1,11 +1,10 @@
 require 'ddtrace/contrib/rails/rails_helper'
 
 RSpec.describe 'ActionController tracing' do
-  let(:tracer) { ::Datadog::Tracer.new(writer: FauxWriter.new) }
+  let(:tracer) { get_test_tracer }
   let(:rails_options) { { tracer: tracer } }
 
   before(:each) do
-    Datadog::RailsActionPatcher.patch_action_controller
     Datadog.configure do |c|
       c.use :rails, rails_options
     end

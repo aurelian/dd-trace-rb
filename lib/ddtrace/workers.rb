@@ -1,6 +1,7 @@
 require 'time'
 
 require 'ddtrace/buffer'
+require 'ddtrace/runtime/metrics'
 
 module Datadog
   module Workers
@@ -59,6 +60,19 @@ module Datadog
           # TODO[manu]: findout the reason and reschedule the send if it's not
           # a fatal exception
           Datadog::Tracer.log.error("Error during services flush: dropped #{services.length} items. Cause: #{e}")
+        end
+      end
+
+      def callback_runtime_metrics
+        return true unless Datadog.metrics.send_stats?
+
+        begin
+          Datadog::Runtime::Metrics.flush(Datadog.metrics)
+        rescue StandardError => e
+          # ensures that the thread will not die because of an exception.
+          # TODO[manu]: findout the reason and reschedule the send if it's not
+          # a fatal exception
+          Datadog::Tracer.log.error("Error during runtime metrics flush. Cause: #{e}")
         end
       end
 
